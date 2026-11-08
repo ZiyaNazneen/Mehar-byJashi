@@ -1,26 +1,86 @@
 @import "tailwindcss";
 
+@theme {
+  --font-serif: var(--font-serif-cormorant), "Playfair Display", "Baskerville", Georgia, serif;
+  --font-sans: var(--font-sans-jakarta), system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+
+  /* Refined warm cream palette */
+  --color-cream-50: #FAF8F5;
+  --color-cream-100: #F5EFE6;
+  --color-cream-200: #EBE1D2;
+  --color-cream-300: #DDD0BD;
+  --color-cream-400: #C9B8A0;
+
+  /* Subtle champagne-gold accents */
+  --color-gold-50: #FBF8F0;
+  --color-gold-100: #F6EFDD;
+  --color-gold-200: #ECDEBC;
+  --color-gold-300: #DFC794;
+  --color-gold-400: #CEAA65;
+  --color-gold-500: #B88E44;
+  --color-gold-600: #9B7330;
+  --color-gold-700: #7B571F;
+
+  /* Warm espresso & rich dark-brown text */
+  --color-espresso-950: #1B1512;
+  --color-espresso-900: #261E19;
+  --color-espresso-800: #382D26;
+  --color-espresso-700: #4E4038;
+  --color-espresso-600: #6C5B52;
+  --color-espresso-500: #8E7C72;
+  --color-espresso-400: #B4A49B;
+  --color-espresso-300: #D8CDC5;
+}
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #FFFFFF;
+  --foreground: #261E19;
+  --surface-cream: #FAF8F5;
+  --surface-cream-muted: #F5EFE6;
+  --border-cream: #EBE1D2;
+  --accent-gold: #B88E44;
+  --accent-gold-subtle: #F6EFDD;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* Custom styling for luxury typography and smooth UI */
+html {
+  scroll-behavior: smooth;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: #FFFFFF;
+  color: #261E19;
+  font-family: var(--font-sans-jakarta), -apple-system, BlinkMacSystemFont, sans-serif;
+  letter-spacing: -0.01em;
+}
+
+/* Delicate editorial selection */
+::selection {
+  background-color: #EBE1D2;
+  color: #1B1512;
+}
+
+/* Accessible focus ring with subtle champagne gold accent */
+*:focus-visible {
+  outline: 2px solid #CEAA65;
+  outline-offset: 2px;
+}
+
+/* Subtle luxury scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #FAF8F5;
+}
+::-webkit-scrollbar-thumb {
+  background: #DDD0BD;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #B88E44;
 }
