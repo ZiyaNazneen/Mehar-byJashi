@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { createClient } from "@/lib/supabase/server";
 import { Product } from "@/types/product";
 import { MOCK_PRODUCTS } from "@/data/mock-products";
@@ -158,36 +159,41 @@ export async function getAllPublishedProducts(): Promise<Product[]> {
 /**
  * Retrieves a single published product by slug.
  */
-export async function getProductBySlug(slug: string): Promise<Product | null> {
-  try {
-    const supabase = await createClient();
-    if (!supabase) {
-      return MOCK_PRODUCTS.find((p) => p.slug === slug) || null;
+export const getProductBySlug = cache(async function getProductBySlug(
+  slug: string
+): Promise<Product | null> {
+  const supabase = await createClient();
+  if (!supabase) {
+    if (process.env.NODE_ENV !== "production") {
+      return MOCK_PRODUCTS.find((p) => p.slug === slug) ?? null;
     }
-
-    const { data, error } = await supabase
-      .from("products")
-      .select(`
-        *,
-        product_images (*),
-        product_variants (*),
-        product_categories (
-          category_id,
-          is_primary,
-          categories (*)
-        )
-      `)
-      .eq("slug", slug)
-      .eq("status", "published")
-      .single();
-
-    if (error || !data) {
-      return MOCK_PRODUCTS.find((p) => p.slug === slug) || null;
-    }
-
-    const transformed = transformJoinedProducts([data]);
-    return transformed[0] || null;
-  } catch {
-    return MOCK_PRODUCTS.find((p) => p.slug === slug) || null;
+    throw new Error("Supabase client could not be initialized");
   }
-}
+
+  const { data, error } = await supabase
+    .from("products")
+    .select(`
+      *,
+      product_images (*),
+      product_variants (*),
+      product_categories (
+        category_id,
+        is_primary,
+        categories (*)
+      )
+    `)
+    .eq("slug", slug)
+    .eq("status", "published")
+    .maybeSingle();
+
+  if (error) {
+    throw new Error("Failed to fetch product from database");
+  }
+
+  if (!data) {
+    return null;
+  }
+
+  const transformed = transformJoinedProducts([data]);
+  return transformed[0] ?? null;
+});

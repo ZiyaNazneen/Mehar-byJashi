@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { Product } from "@/types/product";
 import { formatCurrency } from "@/lib/utils";
 import { Heart, Eye, Sparkles } from "lucide-react";
@@ -70,6 +71,13 @@ export function ProductCard({ product, onQuickView }: ProductCardProps) {
             )}
           </div>
 
+          {/* Direct product detail overlay link */}
+          <Link
+            href={`/product/${product.slug}`}
+            className="absolute inset-0 z-0 focus-visible:outline-2 focus-visible:outline-gold-500 rounded-sm"
+            aria-label={`View ${product.name}`}
+          />
+
           {/* Badge */}
           {product.badge && (
             <div className="absolute top-3 left-3 z-10">
@@ -119,7 +127,12 @@ export function ProductCard({ product, onQuickView }: ProductCardProps) {
           </div>
 
           <h3 className="text-sm sm:text-base font-serif text-espresso-950 font-normal group-hover:text-gold-700 transition-colors line-clamp-1">
-            {product.name}
+            <Link
+              href={`/product/${product.slug}`}
+              className="hover:text-gold-700 transition-colors focus-visible:outline-2 focus-visible:outline-gold-500 rounded-xs"
+            >
+              {product.name}
+            </Link>
           </h3>
 
           <p className="text-xs text-espresso-600 line-clamp-1">
