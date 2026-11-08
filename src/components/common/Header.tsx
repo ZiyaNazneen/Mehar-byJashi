@@ -12,8 +12,10 @@ import {
   Menu,
   X,
 } from "lucide-react";
+import { useCart } from "@/components/cart/CartProvider";
 
 export function Header() {
+  const { count, isReady } = useCart();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -133,12 +135,20 @@ export function Header() {
               <button
                 type="button"
                 className="p-2 text-espresso-950 hover:text-gold-700 hover:bg-cream-50 rounded-full transition-colors relative focus:outline-none focus:ring-2 focus:ring-gold-400"
-                aria-label="Shopping bag containing 0 items"
+                aria-label={
+                  isReady
+                    ? `Shopping bag containing ${count} item${count === 1 ? "" : "s"}`
+                    : "Shopping bag"
+                }
                 title="Shopping Bag"
               >
                 <ShoppingBag className="w-5 h-5" aria-hidden="true" />
-                <span className="absolute top-1 right-1 w-4 h-4 rounded-full bg-gold-500 text-espresso-950 text-[10px] font-bold flex items-center justify-center leading-none ring-2 ring-white">
-                  0
+                <span
+                  className={`absolute top-1 right-1 w-4 h-4 rounded-full bg-gold-500 text-espresso-950 text-[10px] font-bold flex items-center justify-center leading-none ring-2 ring-white ${
+                    isReady ? "" : "invisible"
+                  }`}
+                >
+                  {isReady ? count : ""}
                 </span>
               </button>
             </div>

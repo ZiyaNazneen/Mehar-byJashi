@@ -12,6 +12,7 @@ export type VariantAvailability =
   | "unavailable";
 
 export const LOW_STOCK_THRESHOLD = 3;
+export const MAX_QUANTITY_PER_LINE = 5;
 
 const SIZE_SORT_ORDER: Record<ClothingSize, number> = {
   XS: 0,
@@ -63,6 +64,17 @@ export function getVariantAvailability(
  */
 export function isPurchasable(availability: VariantAvailability): boolean {
   return availability === "in_stock" || availability === "low_stock";
+}
+
+export function getMaxPurchasableQuantity(
+  variant: ProductVariantInventory | undefined
+): number {
+  const availability = getVariantAvailability(variant);
+  if (!variant || !isPurchasable(availability)) {
+    return 0;
+  }
+
+  return Math.min(variant.stockQuantity, MAX_QUANTITY_PER_LINE);
 }
 
 /**

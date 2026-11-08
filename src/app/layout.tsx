@@ -4,6 +4,7 @@ import "./globals.css";
 import { AnnouncementBar } from "@/components/common/AnnouncementBar";
 import { Header } from "@/components/common/Header";
 import { Footer } from "@/components/common/Footer";
+import { CartProvider } from "@/components/cart/CartProvider";
 import { BRAND_NAME, BRAND_TAGLINE } from "@/lib/constants";
 
 const cormorant = Cormorant_Garamond({
@@ -60,27 +61,29 @@ export default function RootLayout({
       className={`${cormorant.variable} ${jakarta.variable} scroll-smooth antialiased`}
     >
       <body className="min-h-screen flex flex-col bg-white text-espresso-900 font-sans selection:bg-cream-200 selection:text-espresso-950">
-        {/* Accessible skip link */}
-        <a
-          href="#main-content"
-          className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-espresso-950 focus:text-cream-100 focus:rounded focus:shadow-lg focus:outline-none"
-        >
-          Skip to main content
-        </a>
+        <CartProvider>
+          {/* Accessible skip link */}
+          <a
+            href="#main-content"
+            className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-espresso-950 focus:text-cream-100 focus:rounded focus:shadow-lg focus:outline-none"
+          >
+            Skip to main content
+          </a>
 
-        {/* Top Announcement Bar */}
-        <AnnouncementBar />
+          {/* Top Announcement Bar */}
+          <AnnouncementBar />
 
-        {/* Global Navigation Header */}
-        <Header />
+          {/* Global Navigation Header */}
+          <Header />
 
-        {/* Main Content Area */}
-        <main id="main-content" className="flex-1">
-          {children}
-        </main>
+          {/* Main Content Area */}
+          <main id="main-content" className="flex-1">
+            {children}
+          </main>
 
-        {/* Global Footer */}
-        <Footer />
+          {/* Global Footer */}
+          <Footer />
+        </CartProvider>
       </body>
     </html>
   );

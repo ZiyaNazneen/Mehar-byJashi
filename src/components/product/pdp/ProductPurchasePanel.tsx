@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Product, ClothingSize } from "@/types/product";
+import { Product, ClothingSize, CartItem } from "@/types/product";
 import {
   getListedColors,
   getListedSizesForColor,
@@ -9,7 +9,10 @@ import {
   findVariant,
   getVariantAvailability,
   isPurchasable,
+  getEffectivePrice,
+  getMaxPurchasableQuantity,
 } from "@/lib/product-availability";
+import { useCart } from "@/components/cart/CartProvider";
 import { ColorSelector } from "./ColorSelector";
 import { SizeSelector } from "./SizeSelector";
 import { StockStatus } from "./StockStatus";
@@ -21,13 +24,18 @@ interface ProductPurchasePanelProps {
 }
 
 export function ProductPurchasePanel({ product }: ProductPurchasePanelProps) {
+  const { addItem, isReady } = useCart();
   const listedColors = getListedColors(product);
   const initialColor = listedColors[0]?.name || "";
 
   const [selectedColorName, setSelectedColorName] = useState<string>(initialColor);
   const [selectedSize, setSelectedSize] = useState<ClothingSize | undefined>(undefined);
+  const [statusMessage, setStatusMessage] = useState("");
 
   const handleSelectColor = (newColorName: string) => {
+    if (newColorName !== selectedColorName) {
+      setStatusMessage("");
+    }
     setSelectedColorName(newColorName);
     // If a size was already selected, reset it if it is not listed or is sold out for the new colour
     if (selectedSize) {
@@ -47,6 +55,13 @@ export function ProductPurchasePanel({ product }: ProductPurchasePanelProps) {
     ? getVariantAvailability(selectedVariant)
     : undefined;
 
+  const handleSelectSize = (newSize: ClothingSize) => {
+    if (newSize !== selectedSize) {
+      setStatusMessage("");
+    }
+    setSelectedSize(newSize);
+  };
+
   const listedVariants = getListedVariants(product);
   const hasListedVariants = listedVariants.length > 0;
 
@@ -64,9 +79,8 @@ export function ProductPurchasePanel({ product }: ProductPurchasePanelProps) {
     ctaLabel = "Sold out";
     ctaDisabled = true;
   } else if (availability && isPurchasable(availability)) {
-    // TODO(Sub-stage 2): wire to cart
     ctaLabel = "Add to Bag";
-    ctaDisabled = true; // Disabled in Sub-stage 1 pending cart integration
+    ctaDisabled = !isReady;
   } else {
     ctaLabel = "Currently unavailable";
     ctaDisabled = true;
@@ -77,6 +91,48 @@ export function ProductPurchasePanel({ product }: ProductPurchasePanelProps) {
   const hasCareInfo = Boolean(
     product.careInstructions && product.careInstructions.length > 0
   );
+
+  const handleAddToBag = () => {
+    if (
+      !selectedVariant ||
+      !selectedSize ||
+      !availability ||
+      !isPurchasable(availability) ||
+      !isReady
+    ) {
+      return;
+    }
+
+    const selectedImage =
+      product.images.find((image) => image.colorName === selectedColorName) ??
+      product.images[0];
+    // Cart price and stock values are display snapshots only, never authoritative.
+    const item: Omit<CartItem, "quantity"> = {
+      variantId: selectedVariant.id,
+      productId: product.id,
+      productName: product.name,
+      productSlug: product.slug,
+      size: selectedSize,
+      colorName: selectedVariant.colorName,
+      colorHex: selectedVariant.colorHex,
+      imageUrl: selectedImage?.url ?? null,
+      unitPrice: getEffectivePrice(product, selectedVariant),
+      maxQuantity: getMaxPurchasableQuantity(selectedVariant),
+    };
+    const result = addItem(item);
+
+    if (result.status === "added") {
+      setStatusMessage(`Added to your bag. ${result.quantityInCart} in bag.`);
+    } else if (result.status === "capped") {
+      setStatusMessage(
+        `Only ${result.quantityInCart} available. Your bag now has the maximum.`
+      );
+    } else if (result.status === "at_limit") {
+      setStatusMessage(
+        "You already have the maximum available in your bag."
+      );
+    }
+  };
 
   return (
     <div className="flex flex-col space-y-6">
@@ -110,7 +166,7 @@ export function ProductPurchasePanel({ product }: ProductPurchasePanelProps) {
         product={product}
         selectedColorName={selectedColorName}
         selectedSize={selectedSize}
-        onSelectSize={setSelectedSize}
+        onSelectSize={handleSelectSize}
       />
 
       {/* Stock Status Indicator */}
@@ -129,6 +185,7 @@ export function ProductPurchasePanel({ product }: ProductPurchasePanelProps) {
           type="button"
           disabled={ctaDisabled}
           aria-disabled={ctaDisabled}
+          onClick={handleAddToBag}
           className={`w-full py-4 px-6 rounded text-xs font-semibold tracking-[0.2em] uppercase transition-all duration-200 flex items-center justify-center gap-2 shadow-sm ${
             ctaDisabled
               ? "bg-cream-200 text-espresso-500 cursor-not-allowed border border-cream-300"
@@ -137,6 +194,13 @@ export function ProductPurchasePanel({ product }: ProductPurchasePanelProps) {
         >
           <span>{ctaLabel}</span>
         </button>
+        <div
+          role="status"
+          aria-live="polite"
+          className="mt-2 text-sm text-espresso-700"
+        >
+          {statusMessage}
+        </div>
       </div>
 
       {/* Native Accordions from Database Fields ONLY */}
