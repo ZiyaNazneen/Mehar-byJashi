@@ -62,14 +62,17 @@ export interface Product {
 }
 
 export interface CartItem {
-  id: string;
+  variantId: string;
   productId: string;
   productName: string;
   productSlug: string;
   size: ClothingSize;
   colorName: string;
   colorHex: string;
-  price: number;
+  imageUrl: string | null;
+  /** Display price snapshot in rupees; never authoritative. */
+  unitPrice: number;
   quantity: number;
-  imageUrl: string;
+  /** Display stock snapshot of min(stock, 5); never authoritative. */
+  maxQuantity: number;
 }
