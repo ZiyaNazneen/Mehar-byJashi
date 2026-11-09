@@ -14,12 +14,11 @@ function isAllowedCartImageUrl(imageUrl: string | null): imageUrl is string {
 
   try {
     const url = new URL(imageUrl);
-    // Keep this allowlist aligned with images.remotePatterns in next.config.ts.
+    // This allowlist mirrors next.config.ts images.remotePatterns.
     return (
       url.protocol === "https:" &&
       (url.hostname === "images.unsplash.com" ||
-        (url.hostname.endsWith(".supabase.co") &&
-          url.hostname.length > ".supabase.co".length))
+        /^[^.]+\.supabase\.co$/.test(url.hostname))
     );
   } catch {
     return false;
@@ -223,7 +222,6 @@ export function CartDrawer() {
                             <Minus className="h-3.5 w-3.5" aria-hidden="true" />
                           </button>
                           <span
-                            aria-label={`Quantity: ${item.quantity}`}
                             className="min-w-7 text-center text-xs text-espresso-950"
                           >
                             {item.quantity}
@@ -254,6 +252,9 @@ export function CartDrawer() {
                           onClick={() => {
                             removeItem(item.variantId);
                             setAnnouncement(`${item.productName} removed from bag`);
+                            requestAnimationFrame(() =>
+                              closeButtonRef.current?.focus()
+                            );
                           }}
                           aria-label={`Remove ${item.productName} from bag`}
                           className="text-xs text-espresso-600 underline underline-offset-2 hover:text-gold-700 focus-visible:outline-2 focus-visible:outline-gold-500"
