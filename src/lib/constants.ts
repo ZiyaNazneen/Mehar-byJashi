@@ -20,7 +20,7 @@ export const NAV_LINKS = [
 export const VALUE_PROPOSITIONS = [
   {
     title: "Worldwide Shipping",
-    description: "Worldwide shipping;Calculated at checkout, with discreet luxury packaging.",
+    description: "Worldwide shipping;Calculated at checkout.",
     icon: "Globe",
   },
   {

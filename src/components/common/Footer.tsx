@@ -16,7 +16,7 @@ export function Footer() {
                 Worldwide Shipping
               </h4>
               <p className="text-xs text-cream-300 leading-relaxed max-w-xs">
-                Worldwide shipping, charged per item at checkout, with discreet luxury packaging.
+                Worldwide shipping, charged  at checkout.
               </p>
             </div>
 
