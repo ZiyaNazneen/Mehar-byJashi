@@ -1,4 +1,5 @@
 import type { CartItem, ClothingSize } from "@/types/product";
+import { MAX_QUANTITY_PER_LINE } from "@/lib/product-availability";
 
 export const CART_STORAGE_KEY = "mehar-cart";
 export const CART_STORAGE_VERSION = 1;
@@ -61,7 +62,7 @@ function parseCartItem(value: unknown): CartItem | null {
     typeof maxQuantity !== "number" ||
     !Number.isInteger(maxQuantity) ||
     maxQuantity <= 0 ||
-    maxQuantity > 5
+    maxQuantity > MAX_QUANTITY_PER_LINE
   ) {
     return null;
   }

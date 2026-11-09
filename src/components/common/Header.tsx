@@ -15,7 +15,7 @@ import {
 import { useCart } from "@/components/cart/CartProvider";
 
 export function Header() {
-  const { count, isReady } = useCart();
+  const { count, isReady, openDrawer } = useCart();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -134,7 +134,9 @@ export function Header() {
               {/* Shopping Bag Icon with Badge */}
               <button
                 type="button"
+                onClick={openDrawer}
                 className="p-2 text-espresso-950 hover:text-gold-700 hover:bg-cream-50 rounded-full transition-colors relative focus:outline-none focus:ring-2 focus:ring-gold-400"
+                aria-haspopup="dialog"
                 aria-label={
                   isReady
                     ? `Shopping bag containing ${count} item${count === 1 ? "" : "s"}`

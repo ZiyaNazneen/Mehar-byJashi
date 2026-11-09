@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Product, ClothingSize, CartItem } from "@/types/product";
+import type { Product, ClothingSize } from "@/types/product";
 import {
   getListedColors,
   getListedSizesForColor,
@@ -9,10 +9,9 @@ import {
   findVariant,
   getVariantAvailability,
   isPurchasable,
-  getEffectivePrice,
-  getMaxPurchasableQuantity,
 } from "@/lib/product-availability";
 import { useCart } from "@/components/cart/CartProvider";
+import { createCartItemSnapshot } from "@/lib/cart-item";
 import { ColorSelector } from "./ColorSelector";
 import { SizeSelector } from "./SizeSelector";
 import { StockStatus } from "./StockStatus";
@@ -24,7 +23,7 @@ interface ProductPurchasePanelProps {
 }
 
 export function ProductPurchasePanel({ product }: ProductPurchasePanelProps) {
-  const { addItem, isReady } = useCart();
+  const { addItem, isReady, openDrawer } = useCart();
   const listedColors = getListedColors(product);
   const initialColor = listedColors[0]?.name || "";
 
@@ -103,30 +102,17 @@ export function ProductPurchasePanel({ product }: ProductPurchasePanelProps) {
       return;
     }
 
-    const selectedImage =
-      product.images.find((image) => image.colorName === selectedColorName) ??
-      product.images[0];
-    // Cart price and stock values are display snapshots only, never authoritative.
-    const item: Omit<CartItem, "quantity"> = {
-      variantId: selectedVariant.id,
-      productId: product.id,
-      productName: product.name,
-      productSlug: product.slug,
-      size: selectedSize,
-      colorName: selectedVariant.colorName,
-      colorHex: selectedVariant.colorHex,
-      imageUrl: selectedImage?.url ?? null,
-      unitPrice: getEffectivePrice(product, selectedVariant),
-      maxQuantity: getMaxPurchasableQuantity(selectedVariant),
-    };
+    const item = createCartItemSnapshot(product, selectedVariant);
     const result = addItem(item);
 
     if (result.status === "added") {
       setStatusMessage(`Added to your bag. ${result.quantityInCart} in bag.`);
+      openDrawer();
     } else if (result.status === "capped") {
       setStatusMessage(
         `Only ${result.quantityInCart} available. Your bag now has the maximum.`
       );
+      openDrawer();
     } else if (result.status === "at_limit") {
       setStatusMessage(
         "You already have the maximum available in your bag."
