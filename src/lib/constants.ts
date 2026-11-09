@@ -3,9 +3,9 @@ export const BRAND_TAGLINE = "Artisanal Grace, Contemporary Luxury";
 export const BRAND_SUBTITLE = "Fine handcrafted womenswear designed for moments of quiet opulence and timeless celebration.";
 
 export const ANNOUNCEMENT_MESSAGES = [
-  "Complimentary Express Worldwide Shipping on Orders Over $250",
+  "Worldwide Shipping • Charges Calculated at Checkout",
   "Handcrafted with Pure Mulberry Silks & Mukaish Embroidery",
-  "Bespoke Made-to-Measure Alterations Available Upon Request",
+  "Ready-to-Ship Pieces; No Custom Sizing or Bespoke Tailoring",
 ];
 
 export const NAV_LINKS = [
@@ -19,8 +19,8 @@ export const NAV_LINKS = [
 
 export const VALUE_PROPOSITIONS = [
   {
-    title: "Worldwide Express",
-    description: "Insured door-to-door delivery across the UK, USA, UAE, and 45+ countries with discreet luxury packaging.",
+    title: "Worldwide Shipping",
+    description: "Worldwide shipping;Calculated at checkout, with discreet luxury packaging.",
     icon: "Globe",
   },
   {
@@ -29,8 +29,8 @@ export const VALUE_PROPOSITIONS = [
     icon: "Sparkles",
   },
   {
-    title: "Bespoke Fit Service",
-    description: "Custom measurements and neckline alterations catered for each silhouette by our atelier specialists.",
+    title: "Ready-to-Ship Pieces",
+    description: "Pieces are ready to ship from stock; custom sizing and bespoke tailoring are not available.",
     icon: "Ruler",
   },
   {
@@ -55,10 +55,10 @@ export const FOOTER_SECTIONS = [
   {
     title: "Client Concierge",
     links: [
-      { label: "Bespoke Sizing & Alterations", href: "#" },
+      { label: "Ready-to-Ship Information", href: "#" },
       { label: "International Shipping Guide", href: "#" },
       { label: "Order Tracking", href: "#" },
-      { label: "Returns & Exchange Policy", href: "#" },
+      { label: "Returns and exchanges accepted for damaged pieces only.", href: "#" },
       { label: "Fabric & Care Consultation", href: "#" },
       { label: "Book a Virtual Appointment", href: "#" },
     ],

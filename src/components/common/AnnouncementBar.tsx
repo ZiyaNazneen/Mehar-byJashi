@@ -46,7 +46,7 @@ export function AnnouncementBar() {
         {/* Right close & currency pill */}
         <div className="flex items-center gap-3">
           <span className="hidden sm:inline-block text-[11px] font-light text-cream-300">
-            INR (₹) • Worldwide Delivery
+            INR (₹) • Worldwide Shipping
           </span>
           <button
             onClick={() => setIsVisible(false)}

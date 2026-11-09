@@ -46,12 +46,12 @@ export function HeroSection() {
             <div className="pt-6 border-t border-cream-200 flex flex-wrap items-center justify-center lg:justify-start gap-6 text-xs text-espresso-600">
               <div className="flex items-center gap-2">
                 <Globe className="w-4 h-4 text-gold-600" />
-                <span>Express Worldwide Shipping</span>
+                <span>Worldwide Shipping</span>
               </div>
               <span className="text-cream-300 hidden sm:inline">•</span>
               <div className="flex items-center gap-2">
                 <ShieldCheck className="w-4 h-4 text-gold-600" />
-                <span>Bespoke Made-to-Measure</span>
+                <span>Ready-to-Ship Pieces</span>
               </div>
             </div>
           </div>

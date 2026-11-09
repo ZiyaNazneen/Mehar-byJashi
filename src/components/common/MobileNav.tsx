@@ -87,7 +87,7 @@ export function MobileNav({ isOpen, onClose }: MobileNavProps) {
         <div className="p-6 bg-cream-100 border-t border-cream-200 space-y-4">
           <div className="flex items-center gap-2 text-xs text-gold-700 font-medium">
             <Sparkles className="w-4 h-4 text-gold-500" />
-            <span>Complimentary Global Delivery</span>
+            <span>Shipping calculated at checkout</span>
           </div>
           <div className="text-xs text-espresso-600 space-y-2">
             <div className="flex items-center gap-2">
