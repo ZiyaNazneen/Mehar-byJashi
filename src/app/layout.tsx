@@ -5,6 +5,7 @@ import { AnnouncementBar } from "@/components/common/AnnouncementBar";
 import { Header } from "@/components/common/Header";
 import { Footer } from "@/components/common/Footer";
 import { CartProvider } from "@/components/cart/CartProvider";
+import { CartDrawer } from "@/components/cart/CartDrawer";
 import { BRAND_NAME, BRAND_TAGLINE } from "@/lib/constants";
 
 const cormorant = Cormorant_Garamond({
@@ -83,6 +84,7 @@ export default function RootLayout({
 
           {/* Global Footer */}
           <Footer />
+          <CartDrawer />
         </CartProvider>
       </body>
     </html>

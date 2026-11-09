@@ -3,7 +3,9 @@
 import {
   createContext,
   useContext,
+  useCallback,
   useMemo,
+  useState,
   useSyncExternalStore,
 } from "react";
 import type { CartItem } from "@/types/product";
@@ -32,6 +34,9 @@ interface CartContextValue {
   removeItem: (variantId: string) => void;
   updateQuantity: (variantId: string, quantity: number) => void;
   clearCart: () => void;
+  isDrawerOpen: boolean;
+  openDrawer: () => void;
+  closeDrawer: () => void;
 }
 
 const INITIAL_SNAPSHOT: CartSnapshot = { items: [], isReady: false };
@@ -98,7 +103,7 @@ function addItem(
   const existing = snapshot.items.find(
     (cartItem) => cartItem.variantId === item.variantId
   );
-  if (existing && existing.quantity >= existing.maxQuantity) {
+  if (existing && existing.quantity >= item.maxQuantity) {
     return { status: "at_limit", quantityInCart: existing.quantity };
   }
 
@@ -182,6 +187,9 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     getSnapshot,
     getServerSnapshot
   );
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const openDrawer = useCallback(() => setIsDrawerOpen(true), []);
+  const closeDrawer = useCallback(() => setIsDrawerOpen(false), []);
 
   const value = useMemo<CartContextValue>(() => {
     const count = cartSnapshot.items.reduce(
@@ -202,8 +210,11 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       removeItem,
       updateQuantity,
       clearCart,
+      isDrawerOpen,
+      openDrawer,
+      closeDrawer,
     };
-  }, [cartSnapshot]);
+  }, [cartSnapshot, isDrawerOpen, openDrawer, closeDrawer]);
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
 }
