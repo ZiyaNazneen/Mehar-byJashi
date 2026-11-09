@@ -27,7 +27,7 @@ export const metadata: Metadata = {
     default: `${BRAND_NAME} | Artisanal Handcrafted Luxury Womenswear`,
     template: `%s | ${BRAND_NAME}`,
   },
-  description: `${BRAND_TAGLINE}. Discover handcrafted pure raw silk ensembles, festive couture, chanderi angrakhas, and contemporary luxury co-ords with worldwide shipping; charges calculated per item at checkout.`,
+  description: `${BRAND_TAGLINE}. Discover handcrafted pure raw silk ensembles, festive couture, chanderi angrakhas, and contemporary luxury co-ords with worldwide shipping; charges calculated at checkout.`,
   keywords: [
     "Mehar by Jashi",
     "Luxury Womenswear",
