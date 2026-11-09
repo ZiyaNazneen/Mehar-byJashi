@@ -2,11 +2,23 @@
 
 import { useState, useEffect } from "react";
 import Image from "next/image";
-import { Product, ClothingSize, ColorOption } from "@/types/product";
-import { formatCurrency } from "@/lib/utils";
+import type { Product, ClothingSize } from "@/types/product";
+import {
+  findVariant,
+  getListedColors,
+  getListedSizesForColor,
+  getListedVariants,
+  getVariantAvailability,
+  isPurchasable,
+} from "@/lib/product-availability";
+import { useCart } from "@/components/cart/CartProvider";
+import { createCartItemSnapshot } from "@/lib/cart-item";
+import { ColorSelector } from "@/components/product/pdp/ColorSelector";
+import { SizeSelector } from "@/components/product/pdp/SizeSelector";
+import { StockStatus } from "@/components/product/pdp/StockStatus";
+import { PriceDisplay } from "@/components/product/pdp/PriceDisplay";
 import {
   X,
-  Check,
   Sparkles,
   ShoppingBag,
   Ruler,
@@ -26,29 +38,85 @@ function QuickViewDialog({
   product: Product;
   onClose: () => void;
 }) {
-  const [selectedColor, setSelectedColor] = useState<ColorOption | null>(
-    product.availableColors[0] || null
+  const { addItem, isReady, openDrawer } = useCart();
+  const listedColors = getListedColors(product);
+  const [selectedColorName, setSelectedColorName] = useState<string>(
+    listedColors[0]?.name || ""
   );
-  const [selectedSize, setSelectedSize] = useState<ClothingSize>(
-    product.availableSizes[0] || "M"
+  const [selectedSize, setSelectedSize] = useState<ClothingSize | undefined>(
+    undefined
   );
   const [activeImageIndex, setActiveImageIndex] = useState(0);
-  const [addedToBag, setAddedToBag] = useState(false);
+  const [statusMessage, setStatusMessage] = useState("");
 
-  // Find variant matching selected size and color
-  const matchedVariant = product.variants.find(
-    (v) =>
-      v.size === selectedSize &&
-      (!selectedColor || v.colorName === selectedColor.name)
-  );
+  const selectedVariant = selectedSize
+    ? findVariant(product, selectedSize, selectedColorName)
+    : undefined;
+  const availability = selectedVariant
+    ? getVariantAvailability(selectedVariant)
+    : undefined;
+  const hasListedVariants = getListedVariants(product).length > 0;
 
-  const stockCount = matchedVariant?.stockQuantity ?? product.totalStock;
+  const handleSelectColor = (newColorName: string) => {
+    if (newColorName !== selectedColorName) {
+      setStatusMessage("");
+    }
+    setSelectedColorName(newColorName);
+
+    if (selectedSize) {
+      const sizesForNewColor = getListedSizesForColor(product, newColorName);
+      const matching = sizesForNewColor.find(
+        (variant) => variant.size === selectedSize
+      );
+      if (!matching || !isPurchasable(getVariantAvailability(matching))) {
+        setSelectedSize(undefined);
+      }
+    }
+  };
+
+  const handleSelectSize = (newSize: ClothingSize) => {
+    if (newSize !== selectedSize) {
+      setStatusMessage("");
+    }
+    setSelectedSize(newSize);
+  };
+
+  let ctaLabel = "Select a size";
+  let ctaDisabled = true;
+
+  if (!hasListedVariants) {
+    ctaLabel = "Currently unavailable";
+  } else if (!selectedSize) {
+    ctaLabel = "Select a size";
+  } else if (availability === "sold_out") {
+    ctaLabel = "Sold out";
+  } else if (availability && isPurchasable(availability)) {
+    ctaLabel = "Add to Bag";
+    ctaDisabled = !isReady;
+  } else {
+    ctaLabel = "Currently unavailable";
+  }
 
   const handleAddToBag = () => {
-    setAddedToBag(true);
-    setTimeout(() => {
-      setAddedToBag(false);
-    }, 2500);
+    if (
+      !selectedVariant ||
+      !selectedSize ||
+      !availability ||
+      !isPurchasable(availability) ||
+      !isReady
+    ) {
+      return;
+    }
+
+    const result = addItem(createCartItemSnapshot(product, selectedVariant));
+    if (result.status === "added" || result.status === "capped") {
+      onClose();
+      openDrawer();
+    } else if (result.status === "at_limit") {
+      setStatusMessage(
+        "You already have the maximum available in your bag."
+      );
+    }
   };
 
   return (
@@ -137,107 +205,47 @@ function QuickViewDialog({
             </div>
 
             {/* Pricing */}
-            <div className="mt-4 flex items-baseline gap-3">
-              <span className="text-xl font-medium text-espresso-950">
-                {formatCurrency(product.basePrice)}
-              </span>
-              {product.compareAtPrice && (
-                <span className="text-sm text-espresso-400 line-through">
-                  {formatCurrency(product.compareAtPrice)}
-                </span>
-              )}
+            <div className="mt-4 flex flex-wrap items-center gap-3">
+              <PriceDisplay
+                product={product}
+                selectedVariant={selectedVariant}
+              />
               <span className="text-[11px] text-gold-700 bg-gold-100 px-2 py-0.5 rounded-full font-medium">
                 Made-to-Order
               </span>
             </div>
 
             {/* Color Selection */}
-            {product.availableColors.length > 0 && (
+            {listedColors.length > 0 && (
               <div className="mt-6">
-                <div className="flex items-center justify-between text-xs mb-2">
-                  <span className="text-espresso-700 font-medium">
-                    Colour:{" "}
-                    <span className="text-espresso-950 font-semibold">
-                      {selectedColor?.name}
-                    </span>
-                  </span>
-                </div>
-                <div className="flex items-center gap-3">
-                  {product.availableColors.map((color) => {
-                    const isSelected = selectedColor?.name === color.name;
-                    return (
-                      <button
-                        key={color.name}
-                        onClick={() => setSelectedColor(color)}
-                        aria-label={`Select color ${color.name}`}
-                        className={`group relative p-1 rounded-full transition-all ${
-                          isSelected
-                            ? "ring-2 ring-gold-600 ring-offset-2"
-                            : "hover:ring-1 hover:ring-cream-300"
-                        }`}
-                        title={color.name}
-                      >
-                        <span
-                          className="block w-6 h-6 rounded-full border border-cream-300 shadow-inner"
-                          style={{ backgroundColor: color.hex }}
-                        />
-                      </button>
-                    );
-                  })}
-                </div>
+                <ColorSelector
+                  product={product}
+                  selectedColorName={selectedColorName}
+                  onSelectColor={handleSelectColor}
+                />
               </div>
             )}
 
             {/* Size Selection */}
-            <div className="mt-6">
-              <div className="flex items-center justify-between text-xs mb-2">
-                <span className="text-espresso-700 font-medium">
-                  Select Size:{" "}
-                  <span className="text-espresso-950 font-semibold">
-                    {selectedSize}
-                  </span>
-                </span>
-                <button
-                  type="button"
-                  className="inline-flex items-center gap-1 text-[11px] text-gold-700 hover:text-gold-900 underline underline-offset-2"
-                >
-                  <Ruler className="w-3.5 h-3.5" />
-                  <span>Size & Fit Guide</span>
-                </button>
-              </div>
-
-              <div className="grid grid-cols-4 sm:grid-cols-6 gap-2">
-                {product.availableSizes.map((size) => {
-                  const isSelected = selectedSize === size;
-                  return (
-                    <button
-                      key={size}
-                      onClick={() => setSelectedSize(size)}
-                      className={`py-2 text-xs font-medium rounded border transition-all text-center ${
-                        isSelected
-                          ? "bg-espresso-950 text-cream-50 border-espresso-950"
-                          : "bg-white text-espresso-800 border-cream-300 hover:border-gold-500"
-                      }`}
-                    >
-                      {size}
-                    </button>
-                  );
-                })}
-              </div>
+            <div className="relative mt-6">
+              <SizeSelector
+                product={product}
+                selectedColorName={selectedColorName}
+                selectedSize={selectedSize}
+                onSelectSize={handleSelectSize}
+              />
+              <button
+                type="button"
+                className="absolute right-0 top-0 inline-flex items-center gap-1 text-[11px] text-gold-700 underline underline-offset-2 hover:text-gold-900"
+              >
+                <Ruler className="h-3.5 w-3.5" aria-hidden="true" />
+                <span>Size & Fit Guide</span>
+              </button>
             </div>
 
             {/* Stock status indicator */}
-            <div className="mt-4 flex items-center gap-2 text-xs">
-              <span
-                className={`w-2 h-2 rounded-full ${
-                  stockCount > 0 ? "bg-emerald-500" : "bg-rose-500"
-                }`}
-              />
-              <span className="text-espresso-600">
-                {stockCount > 0
-                  ? `In Stock (${stockCount} available for immediate atelier cut)`
-                  : "Made on Pre-Order (Estimated 14 days)"}
-              </span>
+            <div className="mt-4">
+              <StockStatus selectedVariant={selectedVariant} />
             </div>
 
             {/* Short Craft Narrative */}
@@ -255,29 +263,29 @@ function QuickViewDialog({
           {/* Add to Bag CTA */}
           <div className="mt-8 pt-6 border-t border-cream-200">
             <button
+              type="button"
               onClick={handleAddToBag}
-              disabled={addedToBag}
+              disabled={ctaDisabled}
+              aria-disabled={ctaDisabled}
               className={`w-full py-3.5 px-6 rounded font-medium text-xs tracking-widest uppercase transition-all duration-200 flex items-center justify-center gap-2 shadow-sm ${
-                addedToBag
-                  ? "bg-emerald-700 text-white"
+                ctaDisabled
+                  ? "bg-cream-200 text-espresso-500 cursor-not-allowed"
                   : "bg-espresso-950 hover:bg-espresso-900 text-cream-100 hover:text-white"
               }`}
             >
-              {addedToBag ? (
-                <>
-                  <Check className="w-4 h-4" />
-                  <span>Added to Your Atelier Bag</span>
-                </>
-              ) : (
-                <>
-                  <ShoppingBag className="w-4 h-4 text-gold-300" />
-                  <span>Add to Bag • {formatCurrency(product.basePrice)}</span>
-                </>
-              )}
+              <ShoppingBag className="h-4 w-4 text-gold-300" aria-hidden="true" />
+              <span>{ctaLabel}</span>
             </button>
+            <div
+              role="status"
+              aria-live="polite"
+              className="mt-2 text-sm text-espresso-700"
+            >
+              {statusMessage}
+            </div>
             <p className="mt-2.5 text-center text-[10px] text-espresso-500 flex items-center justify-center gap-1">
-              <Truck className="w-3 h-3 text-gold-600" />
-              <span>Complimentary insured worldwide shipping on this piece</span>
+              <Truck className="h-3 w-3 text-gold-600" aria-hidden="true" />
+              <span>Shipping calculated at checkout.</span>
             </p>
           </div>
         </div>
