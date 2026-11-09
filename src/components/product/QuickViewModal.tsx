@@ -21,7 +21,6 @@ import {
   X,
   Sparkles,
   ShoppingBag,
-  Ruler,
   Truck,
 } from "lucide-react";
 
@@ -210,9 +209,6 @@ function QuickViewDialog({
                 product={product}
                 selectedVariant={selectedVariant}
               />
-              <span className="text-[11px] text-gold-700 bg-gold-100 px-2 py-0.5 rounded-full font-medium">
-                Made-to-Order
-              </span>
             </div>
 
             {/* Color Selection */}
@@ -227,20 +223,13 @@ function QuickViewDialog({
             )}
 
             {/* Size Selection */}
-            <div className="relative mt-6">
+            <div className="mt-6">
               <SizeSelector
                 product={product}
                 selectedColorName={selectedColorName}
                 selectedSize={selectedSize}
                 onSelectSize={handleSelectSize}
               />
-              <button
-                type="button"
-                className="absolute right-0 top-0 inline-flex items-center gap-1 text-[11px] text-gold-700 underline underline-offset-2 hover:text-gold-900"
-              >
-                <Ruler className="h-3.5 w-3.5" aria-hidden="true" />
-                <span>Size & Fit Guide</span>
-              </button>
             </div>
 
             {/* Stock status indicator */}

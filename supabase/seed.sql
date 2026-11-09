@@ -247,7 +247,7 @@ VALUES
   ('b2000000-0000-0000-0000-000000000001', 'MBJ-ZAR-CG-M',  'M',  'Champagne Gold', '#E3CCA2', 5, 0, true),
   ('b2000000-0000-0000-0000-000000000001', 'MBJ-ZAR-CG-L',  'L',  'Champagne Gold', '#E3CCA2', 3, 0, true),
   ('b2000000-0000-0000-0000-000000000001', 'MBJ-ZAR-CG-XL', 'XL', 'Champagne Gold', '#E3CCA2', 2, 0, true),
-  ('b2000000-0000-0000-0000-000000000001', 'MBJ-ZAR-CG-CUST', 'Custom', 'Champagne Gold', '#E3CCA2', 10, 0, true),
+  ('b2000000-0000-0000-0000-000000000001', 'MBJ-ZAR-CG-CUST', 'Custom', 'Champagne Gold', '#E3CCA2', 10, 0, false),
   
   -- Noor variants
   ('b2000000-0000-0000-0000-000000000002', 'MBJ-NOOR-IV-S', 'S', 'Ivory Pearl', '#FDFBF7', 5, 0, true),
@@ -255,7 +255,7 @@ VALUES
   ('b2000000-0000-0000-0000-000000000002', 'MBJ-NOOR-IV-L', 'L', 'Ivory Pearl', '#FDFBF7', 4, 0, true),
   
   -- Shahana variants
-  ('b2000000-0000-0000-0000-000000000003', 'MBJ-SHAH-LC-CUST', 'Custom', 'Liquid Champagne', '#DFC38A', 8, 0, true),
+  ('b2000000-0000-0000-0000-000000000003', 'MBJ-SHAH-LC-CUST', 'Custom', 'Liquid Champagne', '#DFC38A', 8, 0, false),
   
   -- Aalia variants
   ('b2000000-0000-0000-0000-000000000004', 'MBJ-AAL-CR-XS', 'XS', 'Warm Cream', '#F5F0E8', 3, 0, true),

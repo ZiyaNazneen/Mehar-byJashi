@@ -13,10 +13,10 @@ export function Footer() {
                 <Globe className="w-5 h-5" aria-hidden="true" />
               </div>
               <h4 className="text-base font-serif tracking-wide text-cream-50">
-                Worldwide Express Delivery
+                Worldwide Shipping
               </h4>
               <p className="text-xs text-cream-300 leading-relaxed max-w-xs">
-                Insured priority dispatch across the US, UK, UAE, Canada, and 45+ international destinations.
+                Worldwide shipping, charged per item at checkout, with discreet luxury packaging.
               </p>
             </div>
 
@@ -37,10 +37,10 @@ export function Footer() {
                 <ShieldCheck className="w-5 h-5" aria-hidden="true" />
               </div>
               <h4 className="text-base font-serif tracking-wide text-cream-50">
-                Bespoke Fit & Atelier Guarantee
+                Ready-to-Ship Pieces
               </h4>
               <p className="text-xs text-cream-300 leading-relaxed max-w-xs">
-                Dedicated tailoring specialists ensure your garments fit impeccably with custom measurement options.
+                Pieces are ready to ship from stock; custom sizing and bespoke tailoring are not available.
               </p>
             </div>
           </div>
